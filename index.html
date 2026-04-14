@@ -9,7 +9,14 @@
 
 <style>
 body { font-family: system-ui; background:#f3f4f6; margin:0; }
-.container { max-width:420px; margin:auto; background:white; padding:16px; min-height:100vh; }
+
+.container {
+  max-width:420px;
+  margin:auto;
+  background:white;
+  padding:16px;
+  min-height:100vh;
+}
 
 .grid {
   display:grid;
@@ -26,10 +33,8 @@ body { font-family: system-ui; background:#f3f4f6; margin:0; }
   cursor:pointer;
 }
 
-.card:hover { transform: translateY(-2px); }
-
 .en { font-size:12px; color:#666; }
-.price { font-weight:bold; color:#d97706; margin-top:4px; }
+.price { font-weight:bold; color:#d97706; }
 
 .btn {
   width:100%;
@@ -42,16 +47,18 @@ body { font-family: system-ui; background:#f3f4f6; margin:0; }
   font-size:16px;
 }
 
-.hidden { display:none; }
-
-/* modal */
+/* 🚨 关键修复：不用 hidden，直接控制 display */
 .modal {
   position:fixed;
   inset:0;
   background:rgba(0,0,0,0.6);
-  display:flex;
+  display:none; /* 默认隐藏 */
   align-items:center;
   justify-content:center;
+}
+
+.modal.show {
+  display:flex; /* 显示 */
 }
 
 .modal-content {
@@ -71,67 +78,37 @@ body { font-family: system-ui; background:#f3f4f6; margin:0; }
 
 <div class="grid">
 
-<div class="card" onclick="addItem('美式 AMERICANO',18,false)">
-☕<br>美式<br><div class="en">AMERICANO</div><div class="price">¥18</div>
-</div>
-
-<div class="card" onclick="addItem('橙 C 美式 ORANGE AMERICANO',22,true)">
-🍊<br>橙 C 美式<br><div class="en">ORANGE AMERICANO</div><div class="price">¥22</div>
-</div>
-
-<div class="card" onclick="addItem('椰青美式 COCONUT WATER AMERICANO',22,true)">
-🥥<br>椰青美式<br><div class="en">COCONUT WATER AMERICANO</div><div class="price">¥22</div>
-</div>
-
-<div class="card" onclick="addItem('葡萄美式 GRAPE AMERICANO',22,true)">
-🍇<br>葡萄美式<br><div class="en">GRAPE AMERICANO</div><div class="price">¥22</div>
-</div>
-
-<div class="card" onclick="addItem('拿铁 LATTE',24,false)">
-🥛<br>拿铁<br><div class="en">LATTE</div><div class="price">¥24</div>
-</div>
-
-<div class="card" onclick="addItem('桂花拿铁 OSMANTHUS LATTE',30,false)">
-🌸<br>桂花拿铁<br><div class="en">OSMANTHUS LATTE</div><div class="price">¥30</div>
-</div>
-
-<div class="card" onclick="addItem('草莓拿铁 STRAWBERRY LATTE',30,false)">
-🍓<br>草莓拿铁<br><div class="en">STRAWBERRY LATTE</div><div class="price">¥30</div>
-</div>
-
-<div class="card" onclick="addItem('焦糖拿铁 CARAMEL LATTE',28,false)">
-🍯<br>焦糖拿铁<br><div class="en">CARAMEL LATTE</div><div class="price">¥28</div>
-</div>
-
-<div class="card" onclick="addItem('玫瑰拿铁 ROSE LATTE',30,false)">
-🌹<br>玫瑰拿铁<br><div class="en">ROSE LATTE</div><div class="price">¥30</div>
-</div>
-
-<div class="card" onclick="addItem('肉桂拿铁 CINNAMON LATTE',30,false)">
-🌿<br>肉桂拿铁<br><div class="en">CINNAMON LATTE</div><div class="price">¥30</div>
-</div>
+<div class="card" onclick="selectItem('美式 AMERICANO',18,true)">美式 AMERICANO ¥18</div>
+<div class="card" onclick="selectItem('橙 C 美式 ORANGE AMERICANO',22,false)">橙 C 美式 ORANGE AMERICANO ¥22</div>
+<div class="card" onclick="selectItem('椰青美式 COCONUT WATER AMERICANO',22,false)">椰青美式 COCONUT WATER AMERICANO ¥22</div>
+<div class="card" onclick="selectItem('葡萄美式 GRAPE AMERICANO',22,false)">葡萄美式 GRAPE AMERICANO ¥22</div>
+<div class="card" onclick="selectItem('拿铁 LATTE',24,true)">拿铁 LATTE ¥24</div>
+<div class="card" onclick="selectItem('桂花拿铁 OSMANTHUS LATTE',30,true)">桂花拿铁 OSMANTHUS LATTE ¥30</div>
+<div class="card" onclick="selectItem('草莓拿铁 STRAWBERRY LATTE',30,true)">草莓拿铁 STRAWBERRY LATTE ¥30</div>
+<div class="card" onclick="selectItem('焦糖拿铁 CARAMEL LATTE',28,true)">焦糖拿铁 CARAMEL LATTE ¥28</div>
+<div class="card" onclick="selectItem('玫瑰拿铁 ROSE LATTE',30,true)">玫瑰拿铁 ROSE LATTE ¥30</div>
+<div class="card" onclick="selectItem('肉桂拿铁 CINNAMON LATTE',30,true)">肉桂拿铁 CINNAMON LATTE ¥30</div>
 
 </div>
 
-<!-- 购物车 -->
-<div id="cartBox" class="hidden">
+<div id="cartBox">
 <h3>🛒 订单</h3>
 <div id="cartList"></div>
 <div><b>总计：<span id="total">¥0</span></b></div>
 </div>
 
-<button class="btn" onclick="generateQR()">生成付款二维码</button>
+<button class="btn" onclick="pay()">生成付款二维码</button>
 
-<div id="qrBox" class="hidden" style="text-align:center;margin-top:20px;"></div>
+<div id="qrBox" style="text-align:center;margin-top:20px;"></div>
 
 </div>
 
-<!-- 冷热选择 -->
-<div id="modal" class="modal hidden">
+<!-- modal -->
+<div id="modal" class="modal">
   <div class="modal-content">
-    <p id="modalTitle"></p>
-    <button onclick="chooseTemp('热')">🔥 热</button>
-    <button onclick="chooseTemp('冰')">❄️ 冰</button>
+    <p id="title"></p>
+    <button onclick="choose('热')">🔥 热</button>
+    <button onclick="choose('冰')">❄️ 冰</button>
     <br><br>
     <button onclick="closeModal()">取消</button>
   </div>
@@ -139,43 +116,51 @@ body { font-family: system-ui; background:#f3f4f6; margin:0; }
 
 <script>
 
-// ✅ 你的支付宝收款码
 const ALIPAY_URL = "https://qr.alipay.com/fkx16714c7pkca2vteocyea";
 
 let cart = [];
 let current = null;
 
-// 点击商品
-function addItem(name, price, needTemp){
+// 👉 选商品
+function selectItem(name, price, needTemp){
+
   if(!needTemp){
     cart.push({name, price});
-    updateCart();
+    update();
     return;
   }
 
   current = {name, price};
-  document.getElementById("modalTitle").innerText = name;
-  document.getElementById("modal").classList.remove("hidden");
+
+  document.getElementById("title").innerText = name;
+  document.getElementById("modal").classList.add("show");
 }
 
-// 选择冷热
-function chooseTemp(temp){
+// 👉 选冷热
+function choose(temp){
+
   cart.push({
     name: current.name + " (" + temp + ")",
     price: current.price
   });
+
+  current = null;
   closeModal();
-  updateCart();
+  update();
 }
 
+// 👉 关闭弹窗（彻底关闭）
 function closeModal(){
-  document.getElementById("modal").classList.add("hidden");
+  document.getElementById("modal").classList.remove("show");
+  current = null;
 }
 
-// 更新购物车
-function updateCart(){
+// 👉 更新订单
+function update(){
+
   let list = document.getElementById("cartList");
   let total = 0;
+
   list.innerHTML = "";
 
   cart.forEach(i=>{
@@ -184,14 +169,10 @@ function updateCart(){
   });
 
   document.getElementById("total").innerText = "¥" + total;
-
-  if(cart.length > 0){
-    document.getElementById("cartBox").classList.remove("hidden");
-  }
 }
 
-// 生成二维码
-function generateQR(){
+// 👉 支付
+function pay(){
 
   if(cart.length === 0){
     alert("请先选择咖啡 ☕");
@@ -209,19 +190,10 @@ function generateQR(){
     height: 200
   });
 
-  box.innerHTML += `
-    <div style="margin-top:10px;font-size:18px;font-weight:bold;">
-      应付 ¥${total}
-    </div>
-    <div style="font-size:12px;color:#666;">
-      请用支付宝扫码付款
-    </div>
-  `;
-
-  box.classList.remove("hidden");
+  box.innerHTML += `<div style="margin-top:10px;font-weight:bold;">应付 ¥${total}</div>`;
 
   cart = [];
-  updateCart();
+  update();
 }
 
 </script>
