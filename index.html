@@ -5,18 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>☕ 点餐菜单</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
 <style>
 body { font-family: system-ui; background:#f3f4f6; margin:0; }
-
-.container {
-  max-width:420px;
-  margin:auto;
-  background:white;
-  padding:16px;
-  min-height:100vh;
-}
+.container { max-width:420px; margin:auto; background:white; padding:16px; min-height:100vh; }
 
 .grid {
   display:grid;
@@ -33,9 +24,6 @@ body { font-family: system-ui; background:#f3f4f6; margin:0; }
   cursor:pointer;
 }
 
-.en { font-size:12px; color:#666; }
-.price { font-weight:bold; color:#d97706; }
-
 .btn {
   width:100%;
   padding:14px;
@@ -44,22 +32,18 @@ body { font-family: system-ui; background:#f3f4f6; margin:0; }
   border:none;
   border-radius:12px;
   margin-top:16px;
-  font-size:16px;
 }
 
-/* 🚨 关键修复：不用 hidden，直接控制 display */
 .modal {
   position:fixed;
   inset:0;
   background:rgba(0,0,0,0.6);
-  display:none; /* 默认隐藏 */
+  display:none;
   align-items:center;
   justify-content:center;
 }
 
-.modal.show {
-  display:flex; /* 显示 */
-}
+.modal.show { display:flex; }
 
 .modal-content {
   background:white;
@@ -121,7 +105,7 @@ const ALIPAY_URL = "https://qr.alipay.com/fkx16714c7pkca2vteocyea";
 let cart = [];
 let current = null;
 
-// 👉 选商品
+// 点击商品
 function selectItem(name, price, needTemp){
 
   if(!needTemp){
@@ -136,9 +120,8 @@ function selectItem(name, price, needTemp){
   document.getElementById("modal").classList.add("show");
 }
 
-// 👉 选冷热
+// 选冷热
 function choose(temp){
-
   cart.push({
     name: current.name + " (" + temp + ")",
     price: current.price
@@ -149,13 +132,12 @@ function choose(temp){
   update();
 }
 
-// 👉 关闭弹窗（彻底关闭）
+// 关闭
 function closeModal(){
   document.getElementById("modal").classList.remove("show");
-  current = null;
 }
 
-// 👉 更新订单
+// 更新
 function update(){
 
   let list = document.getElementById("cartList");
@@ -171,26 +153,24 @@ function update(){
   document.getElementById("total").innerText = "¥" + total;
 }
 
-// 👉 支付
+// 🚨 微信稳定方案：不用qrcode库，直接跳转
 function pay(){
 
   if(cart.length === 0){
-    alert("请先选择咖啡 ☕");
+    alert("请先选择咖啡");
     return;
   }
 
   let total = cart.reduce((s,i)=>s+i.price,0);
 
-  let box = document.getElementById("qrBox");
-  box.innerHTML = "";
-
-  new QRCode(box, {
-    text: ALIPAY_URL,
-    width: 200,
-    height: 200
-  });
-
-  box.innerHTML += `<div style="margin-top:10px;font-weight:bold;">应付 ¥${total}</div>`;
+  document.getElementById("qrBox").innerHTML = `
+    <div style="padding:15px;background:#fff;border-radius:12px;">
+      <p>应付金额：<b>¥${total}</b></p>
+      <a href="${ALIPAY_URL}" style="display:block;margin-top:10px;color:white;background:#1677ff;padding:12px;border-radius:8px;text-decoration:none;">
+        点击跳转支付宝付款
+      </a>
+    </div>
+  `;
 
   cart = [];
   update();
