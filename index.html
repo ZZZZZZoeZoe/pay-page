@@ -11,8 +11,20 @@ body { font-family: system-ui; background:#f3f4f6; margin:0; }
 .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .card { padding:14px; background:white; border-radius:12px; text-align:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
 .card:hover { transform: translateY(-2px); }
-.btn { width:100%; padding:14px; background:#d97706; color:white; border:none; border-radius:12px; margin-top:16px; font-size:16px;}
+.en { font-size:12px; color:#666; }
+.price { font-weight:bold; color:#d97706; }
+.btn { width:100%; padding:14px; background:#d97706; color:white; border:none; border-radius:12px; margin-top:16px; font-size:16px; }
+
 .hidden { display:none; }
+
+/* 🔥 关键：默认不显示 */
+.modal {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  align-items:center;
+  justify-content:center;
+}
 </style>
 </head>
 
@@ -24,21 +36,51 @@ body { font-family: system-ui; background:#f3f4f6; margin:0; }
 
 <div class="grid">
 
-<div onclick="addItem('美式',18)">☕<br>美式 ¥18</div>
-<div onclick="addItem('橙C美式',22,true)">🍊<br>橙C ¥22</div>
-<div onclick="addItem('椰青美式',22,true)">🥥<br>椰青 ¥22</div>
-<div onclick="addItem('葡萄美式',22,true)">🍇<br>葡萄 ¥22</div>
-<div onclick="addItem('拿铁',24)">🥛<br>拿铁 ¥24</div>
-<div onclick="addItem('桂花拿铁',30)">🌸<br>桂花 ¥30</div>
-<div onclick="addItem('草莓拿铁',30)">🍓<br>草莓 ¥30</div>
-<div onclick="addItem('焦糖拿铁',28)">🍯<br>焦糖 ¥28</div>
-<div onclick="addItem('玫瑰拿铁',30)">🌹<br>玫瑰 ¥30</div>
-<div onclick="addItem('肉桂拿铁',30)">🌿<br>肉桂 ¥30</div>
+<div class="card" onclick="addItem('美式 AMERICANO',18)">
+☕<br>美式<div class="en">AMERICANO</div><div class="price">¥18</div>
+</div>
+
+<div class="card" onclick="addItem('橙C美式 ORANGE AMERICANO',22,true)">
+🍊<br>橙C美式<div class="en">ORANGE AMERICANO</div><div class="price">¥22</div>
+</div>
+
+<div class="card" onclick="addItem('椰青美式 COCONUT WATER AMERICANO',22,true)">
+🥥<br>椰青美式<div class="en">COCONUT WATER AMERICANO</div><div class="price">¥22</div>
+</div>
+
+<div class="card" onclick="addItem('葡萄美式 GRAPE AMERICANO',22,true)">
+🍇<br>葡萄美式<div class="en">GRAPE AMERICANO</div><div class="price">¥22</div>
+</div>
+
+<div class="card" onclick="addItem('拿铁 LATTE',24)">
+🥛<br>拿铁<div class="en">LATTE</div><div class="price">¥24</div>
+</div>
+
+<div class="card" onclick="addItem('桂花拿铁 OSMANTHUS LATTE',30)">
+🌸<br>桂花拿铁<div class="en">OSMANTHUS LATTE</div><div class="price">¥30</div>
+</div>
+
+<div class="card" onclick="addItem('草莓拿铁 STRAWBERRY LATTE',30)">
+🍓<br>草莓拿铁<div class="en">STRAWBERRY LATTE</div><div class="price">¥30</div>
+</div>
+
+<div class="card" onclick="addItem('焦糖拿铁 CARAMEL LATTE',28)">
+🍯<br>焦糖拿铁<div class="en">CARAMEL LATTE</div><div class="price">¥28</div>
+</div>
+
+<div class="card" onclick="addItem('玫瑰拿铁 ROSE LATTE',30)">
+🌹<br>玫瑰拿铁<div class="en">ROSE LATTE</div><div class="price">¥30</div>
+</div>
+
+<div class="card" onclick="addItem('肉桂拿铁 CINNAMON LATTE',30)">
+🌿<br>肉桂拿铁<div class="en">CINNAMON LATTE</div><div class="price">¥30</div>
+</div>
 
 </div>
 
+<!-- 订单 -->
 <div id="cartBox" class="hidden">
-<h3>订单</h3>
+<h3>🛒 订单</h3>
 <div id="cartList"></div>
 <div><b>总计：<span id="total">¥0</span></b></div>
 </div>
@@ -49,40 +91,57 @@ body { font-family: system-ui; background:#f3f4f6; margin:0; }
 
 </div>
 
-<!-- 弹窗 -->
-<div id="modal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;">
-<div style="background:white;padding:20px;border-radius:12px;text-align:center;">
-<p id="modalTitle"></p>
-<button onclick="chooseTemp('热')">🔥 热</button>
-<button onclick="chooseTemp('冰')">❄️ 冰</button>
-</div>
+<!-- 🔥 冷热弹窗（默认隐藏） -->
+<div id="modal" class="modal hidden">
+  <div style="background:white;padding:20px;border-radius:12px;text-align:center;">
+    <p id="modalTitle"></p>
+    <button onclick="chooseTemp('热')">🔥 热</button>
+    <button onclick="chooseTemp('冰')">❄️ 冰</button>
+    <br>
+    <button onclick="closeModal()" style="margin-top:10px;">取消</button>
+  </div>
 </div>
 
 <script>
 
-// 🔥 必填：换成你的支付宝二维码内容（字符串）
 const ALIPAY_QR = "这里填你的支付宝收款二维码内容";
 
 let cart = [];
 let current = null;
 
+// 点击咖啡
 function addItem(name, price, icedOnly=false){
+
   if(icedOnly){
     cart.push({name:name+"(冰)",price});
     updateCart();
     return;
   }
-  current={name,price};
-  document.getElementById("modalTitle").innerText=name;
+
+  current = {name, price};
+
+  // 🔥 显示弹窗
+  document.getElementById("modalTitle").innerText = name;
   document.getElementById("modal").classList.remove("hidden");
 }
 
+// 选冷热
 function chooseTemp(temp){
-  cart.push({name:current.name+"("+temp+")",price:current.price});
-  document.getElementById("modal").classList.add("hidden");
+  cart.push({
+    name: current.name + "(" + temp + ")",
+    price: current.price
+  });
+
+  closeModal();
   updateCart();
 }
 
+// 关闭弹窗
+function closeModal(){
+  document.getElementById("modal").classList.add("hidden");
+}
+
+// 更新订单
 function updateCart(){
   let list=document.getElementById("cartList");
   let total=0;
@@ -91,31 +150,15 @@ function updateCart(){
     list.innerHTML+=`<div>${i.name} ¥${i.price}</div>`;
     total+=i.price;
   });
+
   document.getElementById("total").innerText="¥"+total;
-  if(cart.length>0) document.getElementById("cartBox").classList.remove("hidden");
-}
 
-// 🔥 无依赖二维码生成（关键！）
-function generateSimpleQR(text){
-  const size = 200;
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext("2d");
-
-  // 白底
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0,0,size,size);
-
-  // 简单“伪二维码”（保证可显示，不依赖库）
-  ctx.fillStyle = "#000";
-  for(let i=0;i<100;i++){
-    ctx.fillRect(Math.random()*size, Math.random()*size, 4, 4);
+  if(cart.length>0){
+    document.getElementById("cartBox").classList.remove("hidden");
   }
-
-  return canvas;
 }
 
+// 生成二维码
 function generateQR(){
 
   if(cart.length===0){
@@ -128,19 +171,10 @@ function generateQR(){
   const qrBox=document.getElementById("qrBox");
 
   qrBox.innerHTML = `
-    <div id="realQR"></div>
+    <iframe src="${ALIPAY_QR}" style="width:200px;height:200px;border:none;"></iframe>
     <div style="margin-top:10px;font-size:18px;font-weight:bold;">应付 ¥${total}</div>
-    <div style="font-size:12px;color:#666">请扫码后输入金额</div>
+    <div style="font-size:12px;color:#666">请在支付宝输入该金额付款</div>
   `;
-
-  // ⚠️ 用iframe方式打开支付宝二维码（兼容微信）
-  const iframe = document.createElement("iframe");
-  iframe.src = ALIPAY_QR;
-  iframe.style.width = "200px";
-  iframe.style.height = "200px";
-  iframe.style.border = "none";
-
-  document.getElementById("realQR").appendChild(iframe);
 
   qrBox.classList.remove("hidden");
 
