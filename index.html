@@ -3,95 +3,177 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>点单付款 | 只用支付宝</title>
+  <title>☕ 点餐菜单 | 支付宝付款</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode.js@1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: system-ui, -apple-system, sans-serif; }
+    .menu-card { transition: all 0.2s; }
+    .menu-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
     .qr-container { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-50 min-h-screen">
   <div class="max-w-md mx-auto bg-white min-h-screen shadow-xl">
 
-    <!-- 顶部提示（只用支付宝） -->
-    <div class="bg-blue-600 text-white p-5 text-center">
-      <h1 class="text-2xl font-bold">📱 点单付款</h1>
-      <p class="mt-2">请用 <strong>支付宝App</strong> 扫码支付</p>
-      <p class="text-sm mt-1">资金直接到个人支付宝 · 零手续费</p>
+    <!-- 顶部标题 -->
+    <div class="bg-amber-600 text-white p-6 text-center">
+      <h1 class="text-3xl font-bold">☕ 点餐菜单</h1>
+      <p class="mt-1">点击饮品选择冷热 · 支付宝扫码支付</p>
+      <p class="text-sm mt-1">零手续费 · 微信用户请用支付宝App扫码</p>
     </div>
 
     <div class="p-6">
-      <!-- 快速商品选择（可自行修改金额和备注） -->
-      <div class="mb-6">
-        <h2 class="text-lg font-semibold mb-3">快速点单</h2>
-        <div class="grid grid-cols-2 gap-3">
-          <button onclick="quickSelect(25, '咖啡 #001')" class="bg-white border border-gray-300 hover:border-blue-500 py-4 rounded-2xl text-sm font-medium">☕ 咖啡 25元</button>
-          <button onclick="quickSelect(35, '奶茶 #002')" class="bg-white border border-gray-300 hover:border-blue-500 py-4 rounded-2xl text-sm font-medium">🧋 奶茶 35元</button>
-          <button onclick="quickSelect(18, '小吃 #003')" class="bg-white border border-gray-300 hover:border-blue-500 py-4 rounded-2xl text-sm font-medium">🍪 小吃 18元</button>
-          <button onclick="quickSelect(50, '套餐 #004')" class="bg-white border border-gray-300 hover:border-blue-500 py-4 rounded-2xl text-sm font-medium">🍔 套餐 50元</button>
+      <h2 class="text-2xl font-semibold mb-6 text-center">COFFE (HOT / ICED)</h2>
+
+      <!-- 美式系列 -->
+      <div class="mb-10">
+        <h3 class="font-medium text-lg mb-4 text-amber-700">美式 Americano</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <!-- 基础美式 -->
+          <div onclick="selectDrink('美式', 18)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+            <div class="text-3xl mb-2">☕</div>
+            <div class="font-medium">美式 AMERICANO</div>
+            <div class="text-amber-600 font-semibold">¥18</div>
+            <div class="text-xs text-gray-500 mt-1">可选择热 / 冰</div>
+          </div>
+
+          <!-- 橙C美式（只有冰） -->
+          <div onclick="selectDrink('橙C美式', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+            <div class="text-3xl mb-2">🍊</div>
+            <div class="font-medium">橙C美式 ORANGE AMERICANO</div>
+            <div class="text-amber-600 font-semibold">¥22</div>
+            <div class="text-xs text-orange-500 mt-1">仅冰</div>
+          </div>
+
+          <!-- 椰青美式（只有冰） -->
+          <div onclick="selectDrink('椰青美式', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+            <div class="text-3xl mb-2">🥥</div>
+            <div class="font-medium">椰青美式 COCONUT WATER AMERICANO</div>
+            <div class="text-amber-600 font-semibold">¥22</div>
+            <div class="text-xs text-orange-500 mt-1">仅冰</div>
+          </div>
+
+          <!-- 葡萄美式（只有冰） -->
+          <div onclick="selectDrink('葡萄美式', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+            <div class="text-3xl mb-2">🍇</div>
+            <div class="font-medium">葡萄美式 GRAPE AMERICANO</div>
+            <div class="text-amber-600 font-semibold">¥22</div>
+            <div class="text-xs text-orange-500 mt-1">仅冰</div>
+          </div>
         </div>
       </div>
 
-      <!-- 自定义金额和备注 -->
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium mb-1">付款金额（元）</label>
-          <input id="amount" type="number" value="25" class="w-full border border-gray-300 rounded-2xl px-5 py-4 text-3xl font-semibold focus:outline-none focus:border-blue-500">
-        </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">订单备注（对账用，必填）</label>
-          <input id="memo" type="text" value="订单#001 咖啡" class="w-full border border-gray-300 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500">
-        </div>
-      </div>
+      <!-- 拿铁系列 -->
+      <div>
+        <h3 class="font-medium text-lg mb-4 text-amber-700">拿铁 Latte</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div onclick="selectDrink('拿铁', 24)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+            <div class="text-3xl mb-2">🥛</div>
+            <div class="font-medium">拿铁 LATTE</div>
+            <div class="text-amber-600 font-semibold">¥24</div>
+            <div class="text-xs text-gray-500 mt-1">可选择热 / 冰</div>
+          </div>
 
-      <!-- 生成按钮 -->
-      <button onclick="generateAlipayQR()" 
-              class="mt-8 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-5 rounded-3xl text-xl shadow-lg">
-        生成支付宝付款二维码
-      </button>
+          <div onclick="selectDrink('桂花拿铁', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+            <div class="text-3xl mb-2">🌸</div>
+            <div class="font-medium">桂花拿铁 OSMANTHUS LATTE</div>
+            <div class="text-amber-600 font-semibold">¥30</div>
+            <div class="text-xs text-gray-500 mt-1">可选择热 / 冰</div>
+          </div>
 
-      <!-- 动态支付宝二维码区域 -->
-      <div id="alipayQRContainer" class="qr-container mt-8 hidden">
-        <p class="text-center text-sm text-gray-500 mb-4">用支付宝App扫一扫付款</p>
-        <div id="alipayQR" class="flex justify-center"></div>
-        <p class="text-xs text-center text-gray-400 mt-4">支付成功后可在支付宝“账单”查看备注确认</p>
-      </div>
+          <div onclick="selectDrink('草莓拿铁', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+            <div class="text-3xl mb-2">🍓</div>
+            <div class="font-medium">草莓拿铁 STRAWBERRY LATTE</div>
+            <div class="text-amber-600 font-semibold">¥30</div>
+            <div class="text-xs text-gray-500 mt-1">可选择热 / 冰</div>
+          </div>
 
-      <!-- 二合一收款码（静态，微信支付宝都能扫） -->
-      <div class="mt-10">
-        <h2 class="text-lg font-semibold mb-3">或者扫二合一收款码</h2>
-        <div class="qr-container">
-          <img id="erheyiQR" src="erheyi.png" 
-               alt="微信+支付宝二合一收款码" class="w-full max-w-[280px] mx-auto block rounded-xl">
-          <p class="text-xs text-center text-gray-400 mt-3">微信或支付宝扫码均可<br>建议在支付备注里写订单号</p>
+          <div onclick="selectDrink('焦糖拿铁', 28)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+            <div class="text-3xl mb-2">🍯</div>
+            <div class="font-medium">焦糖拿铁 CARAMEL LATTE</div>
+            <div class="text-amber-600 font-semibold">¥28</div>
+            <div class="text-xs text-gray-500 mt-1">可选择热 / 冰</div>
+          </div>
+
+          <div onclick="selectDrink('玫瑰拿铁', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+            <div class="text-3xl mb-2">🌹</div>
+            <div class="font-medium">玫瑰拿铁 ROSE LATTE</div>
+            <div class="text-amber-600 font-semibold">¥30</div>
+            <div class="text-xs text-gray-500 mt-1">可选择热 / 冰</div>
+          </div>
+
+          <div onclick="selectDrink('肉桂拿铁', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+            <div class="text-3xl mb-2">🌿</div>
+            <div class="font-medium">肉桂拿铁 CINNAMON LATTE</div>
+            <div class="text-amber-600 font-semibold">¥30</div>
+            <div class="text-xs text-gray-500 mt-1">可选择热 / 冰</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="text-center text-xs text-gray-400 py-8">
-      只用个人支付宝收款 · 无任何手续费
+    <!-- 冷热选择弹窗 -->
+    <div id="tempModal" class="fixed inset-0 bg-black/70 hidden flex items-end justify-center">
+      <div class="bg-white w-full max-w-md rounded-t-3xl p-6">
+        <h3 class="text-xl font-semibold mb-6 text-center" id="modalTitle"></h3>
+        <div class="grid grid-cols-2 gap-4">
+          <button onclick="confirmTemp('Hot')" class="py-6 bg-amber-100 hover:bg-amber-200 rounded-3xl text-lg font-medium">🔥 热 Hot</button>
+          <button onclick="confirmTemp('Iced')" class="py-6 bg-sky-100 hover:bg-sky-200 rounded-3xl text-lg font-medium">❄️ 冰 Iced</button>
+        </div>
+        <button onclick="closeModal()" class="mt-6 w-full py-4 text-gray-500">取消</button>
+      </div>
+    </div>
+
+    <!-- 二维码区域 -->
+    <div id="qrContainer" class="qr-container mx-6 mb-10 hidden">
+      <p class="text-center text-green-600 font-medium mb-4">✅ 请用支付宝App扫码支付</p>
+      <div id="qrcode" class="flex justify-center"></div>
+      <p class="text-xs text-center text-gray-500 mt-4">支付成功后可在支付宝账单查看</p>
+    </div>
+
+    <!-- 二合一码 -->
+    <div class="text-center pb-10">
+      <p class="text-sm text-gray-500 mb-3">或直接扫下方二合一收款码</p>
+      <img src="erheyi.png" alt="二合一收款码" class="mx-auto rounded-2xl max-w-[260px]">
     </div>
   </div>
 
   <script>
-    // 这里改成你自己的支付宝UID（2088开头）
-    const yourAlipayUID = "2088702744737584";   // ←←← 必须修改！！！
+    const yourAlipayUID = "2088702744737584";   // ←←← 必须改成你的真实支付宝UID
 
-    function quickSelect(amount, memo) {
-      document.getElementById('amount').value = amount;
-      document.getElementById('memo').value = memo;
-      generateAlipayQR();
+    let currentAmount = 0;
+    let currentName = "";
+
+    function selectDrink(name, amount, onlyIced = false) {
+      currentAmount = amount;
+      currentName = name;
+
+      if (onlyIced) {
+        // 只有冰的饮品直接生成
+        generateQR(name + " (Iced)");
+      } else {
+        // 可选冷热的饮品弹出选择
+        document.getElementById('modalTitle').textContent = name;
+        document.getElementById('tempModal').classList.remove('hidden');
+      }
     }
 
-    function generateAlipayQR() {
-      const amount = document.getElementById('amount').value || 0;
-      let memo = document.getElementById('memo').value || "订单";
+    function confirmTemp(temp) {
+      closeModal();
+      const fullName = currentName + " (" + temp + ")";
+      generateQR(fullName);
+    }
 
-      const url = `alipays://platformapi/startapp?appId=20000123&actionType=scan&biz_data={"s":"money","u":"${yourAlipayUID}","a":"${amount}","m":"${memo}"}`;
+    function closeModal() {
+      document.getElementById('tempModal').classList.add('hidden');
+    }
 
-      const container = document.getElementById('alipayQRContainer');
-      const qrDiv = document.getElementById('alipayQR');
+    function generateQR(itemName) {
+      const url = `alipays://platformapi/startapp?appId=20000123&actionType=scan&biz_data={"s":"money","u":"${yourAlipayUID}","a":"${currentAmount}","m":"${itemName}"}`;
+
+      const container = document.getElementById('qrContainer');
+      const qrDiv = document.getElementById('qrcode');
       
       qrDiv.innerHTML = '';
       container.classList.remove('hidden');
@@ -101,12 +183,15 @@
         width: 260,
         height: 260
       });
+
+      // 滚动到二维码位置
+      container.scrollIntoView({ behavior: "smooth" });
     }
 
-    // 页面加载完成
-    window.onload = function() {
-      // 如果二合一图片不在同一文件夹，改成完整链接，例如：https://你的域名/erheyi.png
-    };
+    // 点击空白处关闭弹窗
+    document.getElementById('tempModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
   </script>
 </body>
 </html>
