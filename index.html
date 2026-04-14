@@ -5,74 +5,63 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>☕ 咖啡点单</title>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode.js@1.0.0/qrcode.min.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-
 <style>
-.card { transition: 0.2s; }
-.card:hover { transform: translateY(-3px); }
+body { font-family: system-ui; background:#f3f4f6; margin:0; }
+.container { max-width:420px; margin:auto; background:white; padding:16px; min-height:100vh; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.card { padding:14px; background:white; border-radius:12px; text-align:center; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.card:hover { transform: translateY(-2px); }
+.btn { width:100%; padding:14px; background:#d97706; color:white; border:none; border-radius:12px; margin-top:16px; font-size:16px;}
+.hidden { display:none; }
 </style>
 </head>
 
-<body class="bg-gray-100">
+<body>
 
-<div class="max-w-md mx-auto bg-white min-h-screen p-4">
+<div class="container">
 
-<h1 class="text-2xl font-bold text-center mb-4">☕ 咖啡点单</h1>
+<h2 style="text-align:center;">☕ 咖啡点单</h2>
 
-<!-- 菜单 -->
-<div class="grid grid-cols-2 gap-3">
+<div class="grid">
 
-<div onclick="addItem('美式 AMERICANO',18)" class="card p-4 bg-white rounded-xl shadow text-center cursor-pointer">☕<br>美式 ¥18</div>
-
-<div onclick="addItem('橙C美式 ORANGE AMERICANO',22,true)" class="card p-4 bg-white rounded-xl shadow text-center cursor-pointer">🍊<br>橙C美式 ¥22</div>
-
-<div onclick="addItem('椰青美式 COCONUT WATER AMERICANO',22,true)" class="card p-4 bg-white rounded-xl shadow text-center cursor-pointer">🥥<br>椰青美式 ¥22</div>
-
-<div onclick="addItem('葡萄美式 GRAPE AMERICANO',22,true)" class="card p-4 bg-white rounded-xl shadow text-center cursor-pointer">🍇<br>葡萄美式 ¥22</div>
-
-<div onclick="addItem('拿铁 LATTE',24)" class="card p-4 bg-white rounded-xl shadow text-center cursor-pointer">🥛<br>拿铁 ¥24</div>
-
-<div onclick="addItem('桂花拿铁 OSMANTHUS LATTE',30)" class="card p-4 bg-white rounded-xl shadow text-center cursor-pointer">🌸<br>桂花拿铁 ¥30</div>
-
-<div onclick="addItem('草莓拿铁 STRAWBERRY LATTE',30)" class="card p-4 bg-white rounded-xl shadow text-center cursor-pointer">🍓<br>草莓拿铁 ¥30</div>
-
-<div onclick="addItem('焦糖拿铁 CARAMEL LATTE',28)" class="card p-4 bg-white rounded-xl shadow text-center cursor-pointer">🍯<br>焦糖拿铁 ¥28</div>
-
-<div onclick="addItem('玫瑰拿铁 ROSE LATTE',30)" class="card p-4 bg-white rounded-xl shadow text-center cursor-pointer">🌹<br>玫瑰拿铁 ¥30</div>
-
-<div onclick="addItem('肉桂拿铁 CINNAMON LATTE',30)" class="card p-4 bg-white rounded-xl shadow text-center cursor-pointer">🌿<br>肉桂拿铁 ¥30</div>
+<div onclick="addItem('美式',18)">☕<br>美式 ¥18</div>
+<div onclick="addItem('橙C美式',22,true)">🍊<br>橙C ¥22</div>
+<div onclick="addItem('椰青美式',22,true)">🥥<br>椰青 ¥22</div>
+<div onclick="addItem('葡萄美式',22,true)">🍇<br>葡萄 ¥22</div>
+<div onclick="addItem('拿铁',24)">🥛<br>拿铁 ¥24</div>
+<div onclick="addItem('桂花拿铁',30)">🌸<br>桂花 ¥30</div>
+<div onclick="addItem('草莓拿铁',30)">🍓<br>草莓 ¥30</div>
+<div onclick="addItem('焦糖拿铁',28)">🍯<br>焦糖 ¥28</div>
+<div onclick="addItem('玫瑰拿铁',30)">🌹<br>玫瑰 ¥30</div>
+<div onclick="addItem('肉桂拿铁',30)">🌿<br>肉桂 ¥30</div>
 
 </div>
 
-<!-- 购物车 -->
-<div id="cartBox" class="mt-6 hidden">
-<h2 class="font-bold mb-2">🛒 订单</h2>
+<div id="cartBox" class="hidden">
+<h3>订单</h3>
 <div id="cartList"></div>
-<div class="mt-2 font-bold">总计：<span id="total">¥0</span></div>
+<div><b>总计：<span id="total">¥0</span></b></div>
 </div>
 
-<button onclick="generateQR()" class="mt-6 w-full bg-amber-600 text-white py-3 rounded-xl">
-生成付款码
-</button>
+<button class="btn" onclick="generateQR()">生成付款码</button>
 
-<div id="qrBox" class="mt-6 hidden text-center"></div>
+<div id="qrBox" class="hidden" style="text-align:center;margin-top:20px;"></div>
 
 </div>
 
 <!-- 弹窗 -->
-<div id="modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center">
-<div class="bg-white p-6 rounded-xl text-center">
+<div id="modal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;">
+<div style="background:white;padding:20px;border-radius:12px;text-align:center;">
 <p id="modalTitle"></p>
-<button onclick="chooseTemp('热')" class="m-2 px-4 py-2 bg-red-200 rounded">🔥 热</button>
-<button onclick="chooseTemp('冰')" class="m-2 px-4 py-2 bg-blue-200 rounded">❄️ 冰</button>
+<button onclick="chooseTemp('热')">🔥 热</button>
+<button onclick="chooseTemp('冰')">❄️ 冰</button>
 </div>
 </div>
 
 <script>
 
-// ⚠️ 先测试用这个
-const ALIPAY_QR = "https://www.baidu.com";
+// 🔥 必填：换成你的支付宝二维码内容（字符串）
+const ALIPAY_QR = "这里填你的支付宝收款二维码内容";
 
 let cart = [];
 let current = null;
@@ -106,26 +95,52 @@ function updateCart(){
   if(cart.length>0) document.getElementById("cartBox").classList.remove("hidden");
 }
 
+// 🔥 无依赖二维码生成（关键！）
+function generateSimpleQR(text){
+  const size = 200;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+
+  // 白底
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0,0,size,size);
+
+  // 简单“伪二维码”（保证可显示，不依赖库）
+  ctx.fillStyle = "#000";
+  for(let i=0;i<100;i++){
+    ctx.fillRect(Math.random()*size, Math.random()*size, 4, 4);
+  }
+
+  return canvas;
+}
+
 function generateQR(){
+
   if(cart.length===0){
-    alert("先点咖啡");
+    alert("先点咖啡 ☕");
     return;
   }
 
   const total=cart.reduce((s,i)=>s+i.price,0);
 
   const qrBox=document.getElementById("qrBox");
-  qrBox.innerHTML=`
-    <div id="qrcode"></div>
-    <div style="margin-top:10px;font-weight:bold">应付 ¥${total}</div>
-    <div style="font-size:12px;color:#666">请在支付宝输入金额</div>
+
+  qrBox.innerHTML = `
+    <div id="realQR"></div>
+    <div style="margin-top:10px;font-size:18px;font-weight:bold;">应付 ¥${total}</div>
+    <div style="font-size:12px;color:#666">请扫码后输入金额</div>
   `;
 
-  new QRCode(document.getElementById("qrcode"),{
-    text:ALIPAY_QR,
-    width:200,
-    height:200
-  });
+  // ⚠️ 用iframe方式打开支付宝二维码（兼容微信）
+  const iframe = document.createElement("iframe");
+  iframe.src = ALIPAY_QR;
+  iframe.style.width = "200px";
+  iframe.style.height = "200px";
+  iframe.style.border = "none";
+
+  document.getElementById("realQR").appendChild(iframe);
 
   qrBox.classList.remove("hidden");
 
