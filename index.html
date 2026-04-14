@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>点单付款 | 只用支付宝</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode.js@1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .qr-container { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <div class="max-w-md mx-auto bg-white min-h-screen shadow-xl">
+
+    <!-- 顶部提示（只用支付宝） -->
+    <div class="bg-blue-600 text-white p-5 text-center">
+      <h1 class="text-2xl font-bold">📱 点单付款</h1>
+      <p class="mt-2">请用 <strong>支付宝App</strong> 扫码支付</p>
+      <p class="text-sm mt-1">资金直接到个人支付宝 · 零手续费</p>
+    </div>
+
+    <div class="p-6">
+      <!-- 快速商品选择（可自行修改金额和备注） -->
+      <div class="mb-6">
+        <h2 class="text-lg font-semibold mb-3">快速点单</h2>
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="quickSelect(25, '咖啡 #001')" class="bg-white border border-gray-300 hover:border-blue-500 py-4 rounded-2xl text-sm font-medium">☕ 咖啡 25元</button>
+          <button onclick="quickSelect(35, '奶茶 #002')" class="bg-white border border-gray-300 hover:border-blue-500 py-4 rounded-2xl text-sm font-medium">🧋 奶茶 35元</button>
+          <button onclick="quickSelect(18, '小吃 #003')" class="bg-white border border-gray-300 hover:border-blue-500 py-4 rounded-2xl text-sm font-medium">🍪 小吃 18元</button>
+          <button onclick="quickSelect(50, '套餐 #004')" class="bg-white border border-gray-300 hover:border-blue-500 py-4 rounded-2xl text-sm font-medium">🍔 套餐 50元</button>
+        </div>
+      </div>
+
+      <!-- 自定义金额和备注 -->
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">付款金额（元）</label>
+          <input id="amount" type="number" value="25" class="w-full border border-gray-300 rounded-2xl px-5 py-4 text-3xl font-semibold focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">订单备注（对账用，必填）</label>
+          <input id="memo" type="text" value="订单#001 咖啡" class="w-full border border-gray-300 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500">
+        </div>
+      </div>
+
+      <!-- 生成按钮 -->
+      <button onclick="generateAlipayQR()" 
+              class="mt-8 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-5 rounded-3xl text-xl shadow-lg">
+        生成支付宝付款二维码
+      </button>
+
+      <!-- 动态支付宝二维码区域 -->
+      <div id="alipayQRContainer" class="qr-container mt-8 hidden">
+        <p class="text-center text-sm text-gray-500 mb-4">用支付宝App扫一扫付款</p>
+        <div id="alipayQR" class="flex justify-center"></div>
+        <p class="text-xs text-center text-gray-400 mt-4">支付成功后可在支付宝“账单”查看备注确认</p>
+      </div>
+
+      <!-- 二合一收款码（静态，微信支付宝都能扫） -->
+      <div class="mt-10">
+        <h2 class="text-lg font-semibold mb-3">或者扫二合一收款码</h2>
+        <div class="qr-container">
+          <img id="erheyiQR" src="erheyi.png" 
+               alt="微信+支付宝二合一收款码" class="w-full max-w-[280px] mx-auto block rounded-xl">
+          <p class="text-xs text-center text-gray-400 mt-3">微信或支付宝扫码均可<br>建议在支付备注里写订单号</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center text-xs text-gray-400 py-8">
+      只用个人支付宝收款 · 无任何手续费
+    </div>
+  </div>
+
+  <script>
+    // 这里改成你自己的支付宝UID（2088开头）
+    const yourAlipayUID = "2088702744737584";   // ←←← 必须修改！！！
+
+    function quickSelect(amount, memo) {
+      document.getElementById('amount').value = amount;
+      document.getElementById('memo').value = memo;
+      generateAlipayQR();
+    }
+
+    function generateAlipayQR() {
+      const amount = document.getElementById('amount').value || 0;
+      let memo = document.getElementById('memo').value || "订单";
+
+      const url = `alipays://platformapi/startapp?appId=20000123&actionType=scan&biz_data={"s":"money","u":"${yourAlipayUID}","a":"${amount}","m":"${memo}"}`;
+
+      const container = document.getElementById('alipayQRContainer');
+      const qrDiv = document.getElementById('alipayQR');
+      
+      qrDiv.innerHTML = '';
+      container.classList.remove('hidden');
+
+      new QRCode(qrDiv, {
+        text: url,
+        width: 260,
+        height: 260
+      });
+    }
+
+    // 页面加载完成
+    window.onload = function() {
+      // 如果二合一图片不在同一文件夹，改成完整链接，例如：https://你的域名/erheyi.png
+    };
+  </script>
+</body>
+</html>
