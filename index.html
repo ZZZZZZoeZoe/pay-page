@@ -10,7 +10,7 @@
     body { font-family: system-ui, -apple-system, sans-serif; }
     .menu-card { transition: all 0.2s; }
     .menu-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
-    .qr-container { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
+    .qr-container { background: white; padding: 24px; border-radius: 20px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -19,8 +19,8 @@
     <!-- 顶部标题 -->
     <div class="bg-amber-600 text-white p-6 text-center">
       <h1 class="text-3xl font-bold">☕ 点餐菜单</h1>
-      <p class="mt-1">点击饮品选择冷热 · 支付宝扫码支付</p>
-      <p class="text-sm mt-1">零手续费 · 微信用户请用支付宝App扫码</p>
+      <p class="mt-2">点击饮品 → 自动生成付款码</p>
+      <p class="text-sm mt-1">微信用户：扫码时请用支付宝App</p>
     </div>
 
     <div class="p-6">
@@ -30,34 +30,30 @@
       <div class="mb-10">
         <h3 class="font-medium text-lg mb-4 text-amber-700">美式 Americano</h3>
         <div class="grid grid-cols-2 gap-4">
-          <!-- 基础美式 -->
-          <div onclick="selectDrink('美式', 18)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+          <div onclick="selectDrink('美式 AMERICANO', 18)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
             <div class="text-3xl mb-2">☕</div>
             <div class="font-medium">美式 AMERICANO</div>
             <div class="text-amber-600 font-semibold">¥18</div>
-            <div class="text-xs text-gray-500 mt-1">可选择热 / 冰</div>
+            <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
           </div>
 
-          <!-- 橙C美式（只有冰） -->
-          <div onclick="selectDrink('橙C美式', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+          <div onclick="selectDrink('橙C美式 ORANGE AMERICANO', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
             <div class="text-3xl mb-2">🍊</div>
-            <div class="font-medium">橙C美式 ORANGE AMERICANO</div>
+            <div class="font-medium">橙C美式</div>
             <div class="text-amber-600 font-semibold">¥22</div>
             <div class="text-xs text-orange-500 mt-1">仅冰</div>
           </div>
 
-          <!-- 椰青美式（只有冰） -->
-          <div onclick="selectDrink('椰青美式', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+          <div onclick="selectDrink('椰青美式 COCONUT WATER AMERICANO', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
             <div class="text-3xl mb-2">🥥</div>
-            <div class="font-medium">椰青美式 COCONUT WATER AMERICANO</div>
+            <div class="font-medium">椰青美式</div>
             <div class="text-amber-600 font-semibold">¥22</div>
             <div class="text-xs text-orange-500 mt-1">仅冰</div>
           </div>
 
-          <!-- 葡萄美式（只有冰） -->
-          <div onclick="selectDrink('葡萄美式', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+          <div onclick="selectDrink('葡萄美式 GRAPE AMERICANO', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
             <div class="text-3xl mb-2">🍇</div>
-            <div class="font-medium">葡萄美式 GRAPE AMERICANO</div>
+            <div class="font-medium">葡萄美式</div>
             <div class="text-amber-600 font-semibold">¥22</div>
             <div class="text-xs text-orange-500 mt-1">仅冰</div>
           </div>
@@ -68,53 +64,48 @@
       <div>
         <h3 class="font-medium text-lg mb-4 text-amber-700">拿铁 Latte</h3>
         <div class="grid grid-cols-2 gap-4">
-          <div onclick="selectDrink('拿铁', 24)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+          <div onclick="selectDrink('拿铁 LATTE', 24)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
             <div class="text-3xl mb-2">🥛</div>
             <div class="font-medium">拿铁 LATTE</div>
             <div class="text-amber-600 font-semibold">¥24</div>
-            <div class="text-xs text-gray-500 mt-1">可选择热 / 冰</div>
+            <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
           </div>
-
-          <div onclick="selectDrink('桂花拿铁', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+          <div onclick="selectDrink('桂花拿铁 OSMANTHUS LATTE', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
             <div class="text-3xl mb-2">🌸</div>
-            <div class="font-medium">桂花拿铁 OSMANTHUS LATTE</div>
+            <div class="font-medium">桂花拿铁</div>
             <div class="text-amber-600 font-semibold">¥30</div>
-            <div class="text-xs text-gray-500 mt-1">可选择热 / 冰</div>
+            <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
           </div>
-
-          <div onclick="selectDrink('草莓拿铁', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+          <div onclick="selectDrink('草莓拿铁 STRAWBERRY LATTE', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
             <div class="text-3xl mb-2">🍓</div>
-            <div class="font-medium">草莓拿铁 STRAWBERRY LATTE</div>
+            <div class="font-medium">草莓拿铁</div>
             <div class="text-amber-600 font-semibold">¥30</div>
-            <div class="text-xs text-gray-500 mt-1">可选择热 / 冰</div>
+            <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
           </div>
-
-          <div onclick="selectDrink('焦糖拿铁', 28)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+          <div onclick="selectDrink('焦糖拿铁 CARAMEL LATTE', 28)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
             <div class="text-3xl mb-2">🍯</div>
-            <div class="font-medium">焦糖拿铁 CARAMEL LATTE</div>
+            <div class="font-medium">焦糖拿铁</div>
             <div class="text-amber-600 font-semibold">¥28</div>
-            <div class="text-xs text-gray-500 mt-1">可选择热 / 冰</div>
+            <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
           </div>
-
-          <div onclick="selectDrink('玫瑰拿铁', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+          <div onclick="selectDrink('玫瑰拿铁 ROSE LATTE', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
             <div class="text-3xl mb-2">🌹</div>
-            <div class="font-medium">玫瑰拿铁 ROSE LATTE</div>
+            <div class="font-medium">玫瑰拿铁</div>
             <div class="text-amber-600 font-semibold">¥30</div>
-            <div class="text-xs text-gray-500 mt-1">可选择热 / 冰</div>
+            <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
           </div>
-
-          <div onclick="selectDrink('肉桂拿铁', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
+          <div onclick="selectDrink('肉桂拿铁 CINNAMON LATTE', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
             <div class="text-3xl mb-2">🌿</div>
-            <div class="font-medium">肉桂拿铁 CINNAMON LATTE</div>
+            <div class="font-medium">肉桂拿铁</div>
             <div class="text-amber-600 font-semibold">¥30</div>
-            <div class="text-xs text-gray-500 mt-1">可选择热 / 冰</div>
+            <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- 冷热选择弹窗 -->
-    <div id="tempModal" class="fixed inset-0 bg-black/70 hidden flex items-end justify-center">
+    <div id="tempModal" class="fixed inset-0 bg-black/70 hidden flex items-end justify-center z-50">
       <div class="bg-white w-full max-w-md rounded-t-3xl p-6">
         <h3 class="text-xl font-semibold mb-6 text-center" id="modalTitle"></h3>
         <div class="grid grid-cols-2 gap-4">
@@ -125,22 +116,30 @@
       </div>
     </div>
 
-    <!-- 二维码区域 -->
-    <div id="qrContainer" class="qr-container mx-6 mb-10 hidden">
-      <p class="text-center text-green-600 font-medium mb-4">✅ 请用支付宝App扫码支付</p>
-      <div id="qrcode" class="flex justify-center"></div>
-      <p class="text-xs text-center text-gray-500 mt-4">支付成功后可在支付宝账单查看</p>
+    <!-- 二维码显示区（选完立即出现） -->
+    <div id="qrContainer" class="qr-container mx-6 mb-12 hidden">
+      <p class="text-center text-green-600 font-semibold mb-3">✅ 已选： <span id="selectedItem" class="font-medium"></span></p>
+      <div id="qrcode" class="flex justify-center mb-4"></div>
+      
+      <div class="bg-amber-50 p-4 rounded-2xl text-center text-sm">
+        <p class="font-medium">请用 <strong>支付宝App</strong> 扫码支付</p>
+        <p class="text-xs text-gray-600 mt-2">微信内无法直接跳转，请用支付宝扫一扫</p>
+      </div>
+
+      <button onclick="copyLink()" class="mt-6 w-full bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl text-sm">
+        复制支付链接（在浏览器中打开）
+      </button>
     </div>
 
     <!-- 二合一码 -->
-    <div class="text-center pb-10">
+    <div class="text-center pb-12">
       <p class="text-sm text-gray-500 mb-3">或直接扫下方二合一收款码</p>
       <img src="erheyi.png" alt="二合一收款码" class="mx-auto rounded-2xl max-w-[260px]">
     </div>
   </div>
 
   <script>
-    const yourAlipayUID = "2088702744737584";   // ←←← 必须改成你的真实支付宝UID
+    const yourAlipayUID = "2088xxxxxxxxxxxx";   // ←←← 改成你的真实UID
 
     let currentAmount = 0;
     let currentName = "";
@@ -150,10 +149,8 @@
       currentName = name;
 
       if (onlyIced) {
-        // 只有冰的饮品直接生成
         generateQR(name + " (Iced)");
       } else {
-        // 可选冷热的饮品弹出选择
         document.getElementById('modalTitle').textContent = name;
         document.getElementById('tempModal').classList.remove('hidden');
       }
@@ -161,34 +158,41 @@
 
     function confirmTemp(temp) {
       closeModal();
-      const fullName = currentName + " (" + temp + ")";
-      generateQR(fullName);
+      generateQR(currentName + " (" + temp + ")");
     }
 
     function closeModal() {
       document.getElementById('tempModal').classList.add('hidden');
     }
 
-    function generateQR(itemName) {
-      const url = `alipays://platformapi/startapp?appId=20000123&actionType=scan&biz_data={"s":"money","u":"${yourAlipayUID}","a":"${currentAmount}","m":"${itemName}"}`;
+    function generateQR(fullName) {
+      const url = `alipays://platformapi/startapp?appId=20000123&actionType=scan&biz_data={"s":"money","u":"${yourAlipayUID}","a":"${currentAmount}","m":"${fullName}"}`;
 
       const container = document.getElementById('qrContainer');
       const qrDiv = document.getElementById('qrcode');
-      
+      const itemSpan = document.getElementById('selectedItem');
+
+      itemSpan.textContent = fullName;
       qrDiv.innerHTML = '';
       container.classList.remove('hidden');
 
       new QRCode(qrDiv, {
         text: url,
-        width: 260,
-        height: 260
+        width: 280,
+        height: 280
       });
 
-      // 滚动到二维码位置
       container.scrollIntoView({ behavior: "smooth" });
     }
 
-    // 点击空白处关闭弹窗
+    function copyLink() {
+      const url = `alipays://platformapi/startapp?appId=20000123&actionType=scan&biz_data={"s":"money","u":"${yourAlipayUID}","a":"${currentAmount}","m":"${currentName}"}`;
+      navigator.clipboard.writeText(url).then(() => {
+        alert("支付链接已复制！\n请在浏览器地址栏粘贴，或长按二维码用支付宝扫码");
+      });
+    }
+
+    // 点击弹窗背景关闭
     document.getElementById('tempModal').addEventListener('click', function(e) {
       if (e.target === this) closeModal();
     });
