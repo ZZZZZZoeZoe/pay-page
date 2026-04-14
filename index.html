@@ -1,149 +1,93 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>☕ 点餐菜单 | 支付宝付款</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode.js@1.0.0/qrcode.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { font-family: system-ui, -apple-system, sans-serif; }
-    .menu-card { transition: all 0.2s; }
-    .menu-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
-    .qr-container { background: white; padding: 24px; border-radius: 20px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
-  </style>
-</head>
-<body class="bg-gray-50 min-h-screen">
-  <div class="max-w-md mx-auto bg-white min-h-screen shadow-xl">
+<script>
 
-    <!-- 顶部标题 -->
-    <div class="bg-amber-600 text-white p-6 text-center">
-      <h1 class="text-3xl font-bold">☕ 点餐菜单</h1>
-      <p class="mt-2">可点多个饮品 · 点击生成付款码</p>
-      <p class="text-sm mt-1">微信用户请用支付宝App扫码</p>
+// 👉 你的固定收款码内容（必须替换）
+const ALIPAY_QR = "这里填你的支付宝收款码内容";
+
+let cart = [];
+let current = null;
+
+// 添加商品
+function addItem(name, price, icedOnly=false) {
+  if (icedOnly) {
+    cart.push({name: name+"(冰)", price});
+    updateCart();
+    return;
+  }
+
+  current = {name, price};
+  document.getElementById("modalTitle").innerText = name;
+  document.getElementById("tempModal").classList.remove("hidden");
+}
+
+// 选择冷热
+function confirmTemp(temp){
+  cart.push({
+    name: current.name + "(" + temp + ")",
+    price: current.price
+  });
+  closeModal();
+  updateCart();
+}
+
+function closeModal(){
+  document.getElementById("tempModal").classList.add("hidden");
+}
+
+// 更新购物车
+function updateCart(){
+  const list = document.getElementById("cartItems");
+  const totalEl = document.getElementById("totalAmount");
+  const cartBox = document.getElementById("cart");
+
+  list.innerHTML = "";
+  let total = 0;
+
+  cart.forEach(item=>{
+    list.innerHTML += `<div>${item.name} ¥${item.price}</div>`;
+    total += item.price;
+  });
+
+  totalEl.innerText = "¥" + total;
+
+  if(cart.length > 0){
+    cartBox.classList.remove("hidden");
+  }
+}
+
+// 🔥 核心：生成二维码（优化版）
+function generateOrderQR(){
+
+  if(cart.length === 0){
+    alert("请先选择咖啡 ☕");
+    return;
+  }
+
+  const total = cart.reduce((sum, item)=> sum + item.price, 0);
+
+  // 👇 关键：把金额写进提示文本
+  const payText = 
+`订单金额：¥${total}
+请在支付宝中输入该金额付款`;
+
+  document.getElementById("qrcode").innerHTML = "";
+
+  new QRCode(document.getElementById("qrcode"), {
+    text: ALIPAY_QR,
+    width: 200,
+    height: 200
+  });
+
+  // 👇 显示金额提示（非常关键）
+  document.getElementById("qrContainer").classList.remove("hidden");
+  document.getElementById("qrContainer").innerHTML += `
+    <div style="margin-top:12px;padding:12px;background:#fff3cd;border-radius:12px;text-align:center">
+      <div style="font-weight:bold;font-size:18px">应付：¥${total}</div>
+      <div style="font-size:12px;color:#666">请在支付宝输入该金额</div>
     </div>
+  `;
 
-    <div class="p-6">
-      <h2 class="text-2xl font-semibold mb-6 text-center">COFFE (HOT / ICED)</h2>
+  // 清空购物车（可选）
+  cart = [];
+}
 
-      <!-- 美式系列 -->
-      <div class="mb-10">
-        <h3 class="font-medium text-lg mb-4 text-amber-700">美式 Americano</h3>
-        <div class="grid grid-cols-2 gap-4">
-          <div onclick="addItem('美式 AMERICANO', 18)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
-            <div class="text-3xl mb-2">☕</div>
-            <div class="font-medium">美式 AMERICANO</div>
-            <div class="text-amber-600 font-semibold">¥18</div>
-            <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
-          </div>
-          <div onclick="addItem('橙C美式 ORANGE AMERICANO', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
-            <div class="text-3xl mb-2">🍊</div>
-            <div class="font-medium">橙C美式</div>
-            <div class="text-amber-600 font-semibold">¥22</div>
-            <div class="text-xs text-orange-500 mt-1">仅冰</div>
-          </div>
-          <div onclick="addItem('椰青美式 COCONUT WATER AMERICANO', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
-            <div class="text-3xl mb-2">🥥</div>
-            <div class="font-medium">椰青美式</div>
-            <div class="text-amber-600 font-semibold">¥22</div>
-            <div class="text-xs text-orange-500 mt-1">仅冰</div>
-          </div>
-          <div onclick="addItem('葡萄美式 GRAPE AMERICANO', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
-            <div class="text-3xl mb-2">🍇</div>
-            <div class="font-medium">葡萄美式</div>
-            <div class="text-amber-600 font-semibold">¥22</div>
-            <div class="text-xs text-orange-500 mt-1">仅冰</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 拿铁系列 -->
-      <div>
-        <h3 class="font-medium text-lg mb-4 text-amber-700">拿铁 Latte</h3>
-        <div class="grid grid-cols-2 gap-4">
-          <div onclick="addItem('拿铁 LATTE', 24)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
-            <div class="text-3xl mb-2">🥛</div>
-            <div class="font-medium">拿铁 LATTE</div>
-            <div class="text-amber-600 font-semibold">¥24</div>
-            <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
-          </div>
-          <div onclick="addItem('桂花拿铁 OSMANTHUS LATTE', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
-            <div class="text-3xl mb-2">🌸</div>
-            <div class="font-medium">桂花拿铁</div>
-            <div class="text-amber-600 font-semibold">¥30</div>
-            <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
-          </div>
-          <div onclick="addItem('草莓拿铁 STRAWBERRY LATTE', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
-            <div class="text-3xl mb-2">🍓</div>
-            <div class="font-medium">草莓拿铁</div>
-            <div class="text-amber-600 font-semibold">¥30</div>
-            <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
-          </div>
-          <div onclick="addItem('焦糖拿铁 CARAMEL LATTE', 28)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
-            <div class="text-3xl mb-2">🍯</div>
-            <div class="font-medium">焦糖拿铁</div>
-            <div class="text-amber-600 font-semibold">¥28</div>
-            <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
-          </div>
-          <div onclick="addItem('玫瑰拿铁 ROSE LATTE', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
-            <div class="text-3xl mb-2">🌹</div>
-            <div class="font-medium">玫瑰拿铁</div>
-            <div class="text-amber-600 font-semibold">¥30</div>
-            <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
-          </div>
-          <div onclick="addItem('肉桂拿铁 CINNAMON LATTE', 30)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
-            <div class="text-3xl mb-2">🌿</div>
-            <div class="font-medium">肉桂拿铁</div>
-            <div class="text-amber-600 font-semibold">¥30</div>
-            <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 购物车显示 -->
-    <div id="cart" class="mx-6 mb-6 bg-amber-50 p-5 rounded-3xl hidden">
-      <h3 class="font-semibold mb-3">当前订单</h3>
-      <div id="cartItems" class="text-sm space-y-1"></div>
-      <div class="border-t pt-3 mt-3 flex justify-between font-bold">
-        <span>总计</span>
-        <span id="totalAmount">¥0</span>
-      </div>
-    </div>
-
-    <!-- 冷热选择弹窗 -->
-    <div id="tempModal" class="fixed inset-0 bg-black/70 hidden flex items-end justify-center z-50">
-      <div class="bg-white w-full max-w-md rounded-t-3xl p-6">
-        <h3 class="text-xl font-semibold mb-6 text-center" id="modalTitle"></h3>
-        <div class="grid grid-cols-2 gap-4">
-          <button onclick="confirmTemp('Hot')" class="py-6 bg-amber-100 hover:bg-amber-200 rounded-3xl text-lg font-medium">🔥 热 Hot</button>
-          <button onclick="confirmTemp('Iced')" class="py-6 bg-sky-100 hover:bg-sky-200 rounded-3xl text-lg font-medium">❄️ 冰 Iced</button>
-        </div>
-        <button onclick="closeModal()" class="mt-6 w-full py-4 text-gray-500">取消</button>
-      </div>
-    </div>
-
-    <!-- 生成付款二维码按钮 -->
-    <div class="mx-6 mb-8">
-      <button onclick="generateOrderQR()" 
-              class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-5 rounded-3xl text-lg shadow-lg">
-        生成支付宝付款二维码
-      </button>
-    </div>
-
-    <!-- 二维码显示区 -->
-    <div id="qrContainer" class="qr-container mx-6 mb-12 hidden">
-      <p class="text-center text-green-600 font-semibold mb-3">✅ 订单已生成</p>
-      <div id="qrcode" class="flex justify-center mb-4"></div>
-      <div class="bg-amber-50 p-4 rounded-2xl text-center text-sm">
-        <p class="font-medium">请用 <strong>支付宝App</strong> 扫码支付</p>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const yourAlipayUID = "2088702744737584";   // ←←← 改成你的真实UID
-
-    let cart = [];   // 购物车数组
-
-    function addItem(name
+</script>
