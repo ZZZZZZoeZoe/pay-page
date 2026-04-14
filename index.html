@@ -20,7 +20,7 @@
     <div class="bg-amber-600 text-white p-6 text-center">
       <h1 class="text-3xl font-bold">☕ 点餐菜单</h1>
       <p class="mt-2">点击饮品 → 自动生成付款码</p>
-      <p class="text-sm mt-1">微信用户：扫码时请用支付宝App</p>
+      <p class="text-sm mt-1">微信用户：请用支付宝App扫码支付</p>
     </div>
 
     <div class="p-6">
@@ -36,21 +36,18 @@
             <div class="text-amber-600 font-semibold">¥18</div>
             <div class="text-xs text-gray-500 mt-1">可热 / 冰</div>
           </div>
-
           <div onclick="selectDrink('橙C美式 ORANGE AMERICANO', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
             <div class="text-3xl mb-2">🍊</div>
             <div class="font-medium">橙C美式</div>
             <div class="text-amber-600 font-semibold">¥22</div>
             <div class="text-xs text-orange-500 mt-1">仅冰</div>
           </div>
-
           <div onclick="selectDrink('椰青美式 COCONUT WATER AMERICANO', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
             <div class="text-3xl mb-2">🥥</div>
             <div class="font-medium">椰青美式</div>
             <div class="text-amber-600 font-semibold">¥22</div>
             <div class="text-xs text-orange-500 mt-1">仅冰</div>
           </div>
-
           <div onclick="selectDrink('葡萄美式 GRAPE AMERICANO', 22, true)" class="menu-card bg-white border border-amber-200 rounded-3xl p-5 cursor-pointer text-center">
             <div class="text-3xl mb-2">🍇</div>
             <div class="font-medium">葡萄美式</div>
@@ -116,30 +113,20 @@
       </div>
     </div>
 
-    <!-- 二维码显示区（选完立即出现） -->
+    <!-- 动态二维码显示区（选完立即出现） -->
     <div id="qrContainer" class="qr-container mx-6 mb-12 hidden">
       <p class="text-center text-green-600 font-semibold mb-3">✅ 已选： <span id="selectedItem" class="font-medium"></span></p>
       <div id="qrcode" class="flex justify-center mb-4"></div>
       
       <div class="bg-amber-50 p-4 rounded-2xl text-center text-sm">
         <p class="font-medium">请用 <strong>支付宝App</strong> 扫码支付</p>
-        <p class="text-xs text-gray-600 mt-2">微信内无法直接跳转，请用支付宝扫一扫</p>
+        <p class="text-xs text-gray-600 mt-2">微信内扫码可能需切换到支付宝App</p>
       </div>
-
-      <button onclick="copyLink()" class="mt-6 w-full bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl text-sm">
-        复制支付链接（在浏览器中打开）
-      </button>
-    </div>
-
-    <!-- 二合一码 -->
-    <div class="text-center pb-12">
-      <p class="text-sm text-gray-500 mb-3">或直接扫下方二合一收款码</p>
-      <img src="erheyi.png" alt="二合一收款码" class="mx-auto rounded-2xl max-w-[260px]">
     </div>
   </div>
 
   <script>
-    const yourAlipayUID = "2088xxxxxxxxxxxx";   // ←←← 改成你的真实UID
+    const yourAlipayUID = "2088702744737584";   // ←←← 必须改成你的真实支付宝UID
 
     let currentAmount = 0;
     let currentName = "";
@@ -172,24 +159,21 @@
       const qrDiv = document.getElementById('qrcode');
       const itemSpan = document.getElementById('selectedItem');
 
-      itemSpan.textContent = fullName;
+      // 清空旧二维码，确保每次都重新生成
       qrDiv.innerHTML = '';
+      itemSpan.textContent = fullName;
       container.classList.remove('hidden');
 
       new QRCode(qrDiv, {
         text: url,
         width: 280,
-        height: 280
+        height: 280,
+        colorDark: "#1e40af",
+        colorLight: "#ffffff"
       });
 
+      // 自动滚动到二维码
       container.scrollIntoView({ behavior: "smooth" });
-    }
-
-    function copyLink() {
-      const url = `alipays://platformapi/startapp?appId=20000123&actionType=scan&biz_data={"s":"money","u":"${yourAlipayUID}","a":"${currentAmount}","m":"${currentName}"}`;
-      navigator.clipboard.writeText(url).then(() => {
-        alert("支付链接已复制！\n请在浏览器地址栏粘贴，或长按二维码用支付宝扫码");
-      });
     }
 
     // 点击弹窗背景关闭
