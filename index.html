@@ -1,98 +1,140 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>☕ 点餐菜单</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>☕ 点餐菜单 | 支付宝付款</title>
 
-<style>
-body { font-family: system-ui; background:#f3f4f6; margin:0; }
-.container { max-width:420px; margin:auto; background:white; padding:16px; min-height:100vh; }
+  <!-- ❗只保留一个CDN（更稳定） -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-.grid {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
+  <style>
+    body { margin:0; font-family: system-ui; background:#f3f4f6; }
+    .container { max-width:420px; margin:auto; background:white; }
 
-.card {
-  padding:14px;
-  border-radius:12px;
-  background:white;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
-  text-align:center;
-  cursor:pointer;
-}
+    .header { background:#d97706; color:white; padding:20px; text-align:center; }
+    .section { padding:16px; }
 
-.btn {
-  width:100%;
-  padding:14px;
-  background:#d97706;
-  color:white;
-  border:none;
-  border-radius:12px;
-  margin-top:16px;
-}
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
-.modal {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.6);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
+    .card {
+      border:1px solid #fcd34d;
+      border-radius:16px;
+      padding:12px;
+      text-align:center;
+      background:white;
+    }
 
-.modal.show { display:flex; }
+    .price { color:#d97706; font-weight:bold; }
 
-.modal-content {
-  background:white;
-  padding:20px;
-  border-radius:12px;
-  text-align:center;
-}
-</style>
+    .cart { background:#fef3c7; padding:12px; margin:12px; border-radius:12px; display:none; }
+
+    .btn {
+      width:90%;
+      margin:20px auto;
+      display:block;
+      background:#d97706;
+      color:white;
+      padding:14px;
+      border:none;
+      border-radius:12px;
+      font-size:16px;
+    }
+
+    .modal {
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.6);
+      display:none;
+      justify-content:center;
+      align-items:flex-end;
+    }
+
+    .modal-content {
+      background:white;
+      width:100%;
+      max-width:420px;
+      padding:20px;
+      border-radius:20px 20px 0 0;
+      text-align:center;
+    }
+  </style>
 </head>
 
 <body>
 
 <div class="container">
 
-<h2 style="text-align:center;">☕ 点餐菜单</h2>
+<div class="header">
+  <h2>☕ 点餐菜单</h2>
+  <p>可点多个饮品 · 点击生成付款码</p>
+</div>
+
+<div class="section">
 
 <div class="grid">
 
-<div class="card" onclick="selectItem('美式 AMERICANO',18,true)">美式 AMERICANO ¥18</div>
-<div class="card" onclick="selectItem('橙 C 美式 ORANGE AMERICANO',22,false)">橙 C 美式 ORANGE AMERICANO ¥22</div>
-<div class="card" onclick="selectItem('椰青美式 COCONUT WATER AMERICANO',22,false)">椰青美式 COCONUT WATER AMERICANO ¥22</div>
-<div class="card" onclick="selectItem('葡萄美式 GRAPE AMERICANO',22,false)">葡萄美式 GRAPE AMERICANO ¥22</div>
-<div class="card" onclick="selectItem('拿铁 LATTE',24,true)">拿铁 LATTE ¥24</div>
-<div class="card" onclick="selectItem('桂花拿铁 OSMANTHUS LATTE',30,true)">桂花拿铁 OSMANTHUS LATTE ¥30</div>
-<div class="card" onclick="selectItem('草莓拿铁 STRAWBERRY LATTE',30,true)">草莓拿铁 STRAWBERRY LATTE ¥30</div>
-<div class="card" onclick="selectItem('焦糖拿铁 CARAMEL LATTE',28,true)">焦糖拿铁 CARAMEL LATTE ¥28</div>
-<div class="card" onclick="selectItem('玫瑰拿铁 ROSE LATTE',30,true)">玫瑰拿铁 ROSE LATTE ¥30</div>
-<div class="card" onclick="selectItem('肉桂拿铁 CINNAMON LATTE',30,true)">肉桂拿铁 CINNAMON LATTE ¥30</div>
-
+<div class="card" onclick="addItem('美式 AMERICANO',18)">
+☕<br>美式 AMERICANO<br><span class="price">¥18</span>
 </div>
 
-<div id="cartBox">
-<h3>🛒 订单</h3>
-<div id="cartList"></div>
-<div><b>总计：<span id="total">¥0</span></b></div>
+<div class="card" onclick="addItem('橙C美式 ORANGE AMERICANO',22,true)">
+🍊<br>橙C美式 ORANGE AMERICANO<br><span class="price">¥22</span>
+</div>
+
+<div class="card" onclick="addItem('椰青美式 COCONUT WATER AMERICANO',22,true)">
+🥥<br>椰青美式 COCONUT WATER AMERICANO<br><span class="price">¥22</span>
+</div>
+
+<div class="card" onclick="addItem('葡萄美式 GRAPE AMERICANO',22,true)">
+🍇<br>葡萄美式 GRAPE AMERICANO<br><span class="price">¥22</span>
+</div>
+
+<div class="card" onclick="addItem('拿铁 LATTE',24)">
+🥛<br>拿铁 LATTE<br><span class="price">¥24</span>
+</div>
+
+<div class="card" onclick="addItem('桂花拿铁 OSMANTHUS LATTE',30)">
+🌸<br>桂花拿铁 OSMANTHUS LATTE<br><span class="price">¥30</span>
+</div>
+
+<div class="card" onclick="addItem('草莓拿铁 STRAWBERRY LATTE',30)">
+🍓<br>草莓拿铁 STRAWBERRY LATTE<br><span class="price">¥30</span>
+</div>
+
+<div class="card" onclick="addItem('焦糖拿铁 CARAMEL LATTE',28)">
+🍯<br>焦糖拿铁 CARAMEL LATTE<br><span class="price">¥28</span>
+</div>
+
+<div class="card" onclick="addItem('玫瑰拿铁 ROSE LATTE',30)">
+🌹<br>玫瑰拿铁 ROSE LATTE<br><span class="price">¥30</span>
+</div>
+
+<div class="card" onclick="addItem('肉桂拿铁 CINNAMON LATTE',30)">
+🌿<br>肉桂拿铁 CINNAMON LATTE<br><span class="price">¥30</span>
+</div>
+
+</div>
+</div>
+
+<div id="cart" class="cart">
+<h3>当前订单</h3>
+<div id="cartItems"></div>
+<b id="total"></b>
 </div>
 
 <button class="btn" onclick="pay()">生成付款二维码</button>
 
-<div id="qrBox" style="text-align:center;margin-top:20px;"></div>
+<div id="qrBox" style="text-align:center;margin:20px;"></div>
 
 </div>
 
-<!-- modal -->
+<!-- 冷热 -->
 <div id="modal" class="modal">
   <div class="modal-content">
     <p id="title"></p>
-    <button onclick="choose('热')">🔥 热</button>
-    <button onclick="choose('冰')">❄️ 冰</button>
+    <button onclick="choose('Hot')">🔥 热</button>
+    <button onclick="choose('Iced')">❄️ 冰</button>
     <br><br>
     <button onclick="closeModal()">取消</button>
   </div>
@@ -100,80 +142,71 @@ body { font-family: system-ui; background:#f3f4f6; margin:0; }
 
 <script>
 
-const ALIPAY_URL = "https://qr.alipay.com/fkx16714c7pkca2vteocyea";
+const yourAlipayUID = "你的UID"; // ←改这里
 
 let cart = [];
 let current = null;
 
-// 点击商品
-function selectItem(name, price, needTemp){
+function addItem(name, price, icedOnly=false){
 
-  if(!needTemp){
-    cart.push({name, price});
+  if(icedOnly){
+    cart.push({name:name+" (Iced)",price});
     update();
     return;
   }
 
-  current = {name, price};
-
+  current = {name,price};
   document.getElementById("title").innerText = name;
-  document.getElementById("modal").classList.add("show");
+  document.getElementById("modal").style.display="flex";
 }
 
-// 选冷热
-function choose(temp){
-  cart.push({
-    name: current.name + " (" + temp + ")",
-    price: current.price
-  });
-
-  current = null;
+function choose(t){
+  cart.push({name:current.name+" ("+t+")",price:current.price});
+  current=null;
   closeModal();
   update();
 }
 
-// 关闭
 function closeModal(){
-  document.getElementById("modal").classList.remove("show");
+  document.getElementById("modal").style.display="none";
 }
 
-// 更新
 function update(){
 
-  let list = document.getElementById("cartList");
-  let total = 0;
-
-  list.innerHTML = "";
+  let total=0;
+  let html="";
 
   cart.forEach(i=>{
-    list.innerHTML += `<div>${i.name} ¥${i.price}</div>`;
-    total += i.price;
+    total+=i.price;
+    html+=`<div>${i.name} ¥${i.price}</div>`;
   });
 
-  document.getElementById("total").innerText = "¥" + total;
+  document.getElementById("cartItems").innerHTML=html;
+  document.getElementById("total").innerText="总计 ¥"+total;
+  document.getElementById("cart").style.display="block";
 }
 
-// 🚨 微信稳定方案：不用qrcode库，直接跳转
 function pay(){
 
-  if(cart.length === 0){
-    alert("请先选择咖啡");
+  if(cart.length===0){
+    alert("请先点咖啡");
     return;
   }
 
-  let total = cart.reduce((s,i)=>s+i.price,0);
+  let total=cart.reduce((s,i)=>s+i.price,0);
 
-  document.getElementById("qrBox").innerHTML = `
-    <div style="padding:15px;background:#fff;border-radius:12px;">
-      <p>应付金额：<b>¥${total}</b></p>
-      <a href="${ALIPAY_URL}" style="display:block;margin-top:10px;color:white;background:#1677ff;padding:12px;border-radius:8px;text-decoration:none;">
-        点击跳转支付宝付款
-      </a>
-    </div>
-  `;
+  let url=`alipays://platformapi/startapp?appId=20000123&actionType=scan&biz_data={"s":"money","u":"${yourAlipayUID}","a":"${total}"}`;
 
-  cart = [];
-  update();
+  let box=document.getElementById("qrBox");
+  box.innerHTML="";
+
+  setTimeout(()=>{
+    new QRCode(box,{
+      text:url,
+      width:220,
+      height:220
+    });
+  },100);
 }
 
 </script>
