@@ -1,13 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>☕ 咖啡点单</title>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode.js@1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body { font-family: system-ui; }
+.card { transition: 0.2s; }
+.card:hover { transform: translateY(-3px); }
+</style>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="max-w-md mx-auto bg-white min-h-screen p-4">
+
+<h1 class="text-2xl font-bold text-center mb-4">☕ 咖啡点单</h1>
+
+<!-- 菜单 -->
+<div class="grid grid-cols-2 gap-3">
+
+<div onclick="addItem('美式',18)" class="card p-4 bg-white rounded-xl shadow text-center cursor-pointer">
+☕<br>美式 ¥18
+</div>
+
+<div onclick="addItem('拿铁',24)" class="card p-4 bg-white rounded-xl shadow text-center cursor-pointer">
+🥛<br>拿铁 ¥24
+</div>
+
+<div onclick="addItem('橙C美式',22,true)" class="card p-4 bg-white rounded-xl shadow text-center cursor-pointer">
+🍊<br>橙C美式 ¥22<br><span class="text-xs text-gray-500">仅冰</span>
+</div>
+
+<div onclick="addItem('桂花拿铁',30)" class="card p-4 bg-white rounded-xl shadow text-center cursor-pointer">
+🌸<br>桂花拿铁 ¥30
+</div>
+
+</div>
+
+<!-- 购物车 -->
+<div id="cartBox" class="mt-6 hidden">
+<h2 class="font-bold mb-2">🛒 订单</h2>
+<div id="cartList" class="text-sm"></div>
+<div class="mt-2 font-bold">总计：<span id="total">¥0</span></div>
+</div>
+
+<!-- 按钮 -->
+<button onclick="generateQR()" class="mt-6 w-full bg-amber-600 text-white py-3 rounded-xl text-lg">
+生成付款码
+</button>
+
+<!-- 二维码 -->
+<div id="qrBox" class="mt-6 hidden text-center"></div>
+
+</div>
+
+<!-- 弹窗 -->
+<div id="modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center">
+<div class="bg-white p-6 rounded-xl text-center">
+<p id="modalTitle" class="mb-4 font-semibold"></p>
+<button onclick="chooseTemp('热')" class="m-2 px-4 py-2 bg-red-200 rounded">🔥 热</button>
+<button onclick="chooseTemp('冰')" class="m-2 px-4 py-2 bg-blue-200 rounded">❄️ 冰</button>
+<br>
+<button onclick="closeModal()" class="mt-4 text-gray-500">取消</button>
+</div>
+</div>
+
 <script>
 
-// 👉 你的固定收款码内容（必须替换）
-const ALIPAY_QR = "这里填你的支付宝收款码内容";
+const ALIPAY_QR = "这里填你的支付宝收款二维码内容";
 
 let cart = [];
 let current = null;
 
 // 添加商品
 function addItem(name, price, icedOnly=false) {
+
   if (icedOnly) {
     cart.push({name: name+"(冰)", price});
     updateCart();
@@ -16,11 +88,11 @@ function addItem(name, price, icedOnly=false) {
 
   current = {name, price};
   document.getElementById("modalTitle").innerText = name;
-  document.getElementById("tempModal").classList.remove("hidden");
+  document.getElementById("modal").classList.remove("hidden");
 }
 
 // 选择冷热
-function confirmTemp(temp){
+function chooseTemp(temp){
   cart.push({
     name: current.name + "(" + temp + ")",
     price: current.price
@@ -30,46 +102,50 @@ function confirmTemp(temp){
 }
 
 function closeModal(){
-  document.getElementById("tempModal").classList.add("hidden");
+  document.getElementById("modal").classList.add("hidden");
 }
 
 // 更新购物车
 function updateCart(){
-  const list = document.getElementById("cartItems");
-  const totalEl = document.getElementById("totalAmount");
-  const cartBox = document.getElementById("cart");
+  const list = document.getElementById("cartList");
+  const totalEl = document.getElementById("total");
+  const box = document.getElementById("cartBox");
 
   list.innerHTML = "";
-  let total = 0;
+  let sum = 0;
 
   cart.forEach(item=>{
     list.innerHTML += `<div>${item.name} ¥${item.price}</div>`;
-    total += item.price;
+    sum += item.price;
   });
 
-  totalEl.innerText = "¥" + total;
+  totalEl.innerText = "¥" + sum;
 
   if(cart.length > 0){
-    cartBox.classList.remove("hidden");
+    box.classList.remove("hidden");
   }
 }
 
-// 🔥 核心：生成二维码（优化版）
-function generateOrderQR(){
+// 生成二维码（核心）
+function generateQR(){
 
   if(cart.length === 0){
-    alert("请先选择咖啡 ☕");
+    alert("请先点咖啡 ☕");
     return;
   }
 
   const total = cart.reduce((sum, item)=> sum + item.price, 0);
 
-  // 👇 关键：把金额写进提示文本
-  const payText = 
-`订单金额：¥${total}
-请在支付宝中输入该金额付款`;
+  const qrBox = document.getElementById("qrBox");
 
-  document.getElementById("qrcode").innerHTML = "";
+  // 清空并重建（避免叠加bug）
+  qrBox.innerHTML = `
+    <div id="qrcode" class="flex justify-center mb-4"></div>
+    <div class="bg-yellow-100 p-3 rounded-xl">
+      <div class="text-lg font-bold">应付：¥${total}</div>
+      <div class="text-xs text-gray-600">请在支付宝输入该金额付款</div>
+    </div>
+  `;
 
   new QRCode(document.getElementById("qrcode"), {
     text: ALIPAY_QR,
@@ -77,17 +153,14 @@ function generateOrderQR(){
     height: 200
   });
 
-  // 👇 显示金额提示（非常关键）
-  document.getElementById("qrContainer").classList.remove("hidden");
-  document.getElementById("qrContainer").innerHTML += `
-    <div style="margin-top:12px;padding:12px;background:#fff3cd;border-radius:12px;text-align:center">
-      <div style="font-weight:bold;font-size:18px">应付：¥${total}</div>
-      <div style="font-size:12px;color:#666">请在支付宝输入该金额</div>
-    </div>
-  `;
+  qrBox.classList.remove("hidden");
 
-  // 清空购物车（可选）
+  // 清空购物车（防止重复）
   cart = [];
+  updateCart();
 }
 
 </script>
+
+</body>
+</html>
